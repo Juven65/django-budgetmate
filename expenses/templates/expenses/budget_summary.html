@@ -1,0 +1,14 @@
+{% extends 'expenses/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Budget Summary</h3>
+  {% if budget %}
+    <p><strong>Budget:</strong> ₱{{ budget.amount }}</p>
+    <p><strong>Total Spent:</strong> ₱{{ total_spent }}</p>
+    <p><strong>Remaining:</strong> ₱{{ remaining }}</p>
+    <p><strong>Used:</strong> {{ percent_used }}%</p>
+  {% else %}
+    <p>No budget set for this month.</p>
+  {% endif %}
+</div>
+{% endblock %}

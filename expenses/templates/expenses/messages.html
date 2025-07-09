@@ -1,0 +1,10 @@
+{% if messages %}
+  <div class="d-flex justify-content-center mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} text-center auto-fade fade show" role="alert" style="max-width: 500px;">
+        {{ message }}
+      </div>
+
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,0 +1,42 @@
+{% extends 'expenses/base.html' %}
+{% block title %}Budget History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>📅 Budget History</h2>
+
+  {% if history %}
+  <table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+      <tr>
+        <th>Month</th>
+        <th>Year</th>
+        <th>Budget</th>
+        <th>Spent</th>
+        <th>% Used</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in history %}
+      <tr>
+        <td>{{ item.month_name }}</td>
+        <td>{{ item.year }}</td>
+        <td>₱{{ item.budget }}</td>
+        <td>₱{{ item.spent }}</td>
+        <td>
+          {{ item.percent_used }}%
+          {% if item.percent_used > 100 %}
+            <span class="badge bg-danger">Over Budget</span>
+          {% elif item.percent_used > 90 %}
+            <span class="badge bg-warning text-dark">Warning</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="text-muted">No budget history available.</p>
+  {% endif %}
+</div>
+{% endblock %}

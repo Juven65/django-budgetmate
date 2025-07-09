@@ -1,0 +1,117 @@
+{% extends 'expenses/base.html' %}
+{% block title %}My Expenses{% endblock %}
+
+{% block content %}
+
+  <!-- 💸 Budget Summary Section -->
+  {% if budget %}
+    <div class="card mb-3 p-3 bg-light shadow-sm rounded">
+      <h5 class="mb-3">📊 Monthly Budget Summary</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Budget ({{ budget.month }}/{{ budget.year }}):</strong> ₱{{ budget.amount }}</p>
+          <p><strong>Total Spent:</strong> ₱{{ total_spent }}</p>
+          <p><strong>Remaining:</strong> ₱{{ remaining }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Used:</strong> {{ percent_used }}%</p>
+          <div class="progress" style="height: 25px;">
+            <div class="progress-bar {% if percent_used > 90 %}bg-danger{% elif percent_used > 70 %}bg-warning{% else %}bg-success{% endif %}"
+                 role="progressbar"
+                 style="width: {{ percent_used }}%"
+                 aria-valuenow="{{ percent_used }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+              {{ percent_used }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      You have not set a budget for this month.
+    </div>
+  {% endif %}
+
+  <!-- 📄 Controls -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Expenses</h2>
+    <div>
+      <a href="{% url 'export-budget-csv' %}" class="btn btn-success btn-sm">⬇️ Export to CSV</a>
+      <a href="{% url 'export-excel' %}" class="btn btn-success btn-sm">Export to Excel</a>
+      <a href="{% url 'add-expense' %}" class="btn btn-primary">Add New Expense</a>
+    </div>
+  </div>
+
+  <!-- 📋 Expenses Table -->
+  {% if expenses %}
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Amount</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for expense in expenses %}
+      <tr>
+        <td>₱{{ expense.amount }}</td>
+        <td>{{ expense.description }}</td>
+        <td>{{ expense.category }}</td>
+        <td>{{ expense.date }}</td>
+        <td>
+          <a href="{% url 'edit-expense' expense.id %}" class="btn btn-sm btn-warning">Edit</a>
+          <a href="{% url 'delete-expense' expense.id %}" class="btn btn-sm btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="text-muted">No expenses yet.</p>
+  {% endif %}
+
+  <!-- 🔍 Filter by Month -->
+  <form method="get" class="mb-3">
+    <label for="month">Filter by Month:</label>
+    <input type="month" name="month" id="month" class="form-control" style="max-width: 200px;" value="{{ request.GET.month }}">
+    <button type="submit" class="btn btn-outline-primary btn-sm mt-1">Apply</button>
+  </form>
+
+  <!-- 📊 Chart -->
+  <h4 class="mt-5">Expenses by Category</h4>
+  <canvas id="categoryChart" width="400" height="200"></canvas>
+
+  <script>
+    fetch("{% url 'expense-summary' %}")
+      .then(response => response.json())
+      .then(data => {
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Total Amount',
+              data: data.data,
+              backgroundColor: 'rgba(54, 162, 235, 0.7)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
+  </script>
+
+{% endblock %}

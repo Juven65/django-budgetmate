@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}BudgetMate{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand" href="{% url 'index' %}">BudgetMate</a>
+    <a href="{% url 'budget-history' %}">📅 Budget History</a>
+    <div class="ms-auto">
+      {% if request.user.is_authenticated %}
+        <span class="text-white me-3">Hi, {{ request.user.username }}!</span>
+        <a href="{% url 'logout-user' %}" class="btn btn-sm btn-outline-light">Logout</a>
+      {% else %}
+        <a href="{% url 'login-user' %}" class="btn btn-sm btn-outline-light">Login</a>
+        <a href="{% url 'logout-user' %}" class="btn btn-sm btn-outline-light">Logout</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    {% include 'expenses/messages.html' %}
+    {% block content %}{% endblock %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Fade alert -->
+  <script>
+    setTimeout(function () {
+      document.querySelectorAll('.auto-fade').forEach(function(alert) {
+        alert.classList.add('fade');
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 500);
+      });
+    }, 3000);
+  </script>
+</body>
+</html>
